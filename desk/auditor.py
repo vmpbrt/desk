@@ -60,7 +60,11 @@ class Auditor:
 
     async def run(self):
         while True:
-            scan = await self.d.bus["auditor"].get()
+            try:
+                scan = await asyncio.wait_for(self.d.bus["auditor"].get(), 30)
+            except asyncio.TimeoutError:
+                self.d.db.heartbeat("auditor", "idle")
+                continue
             while self.d.db.paused("auditor"):
                 await asyncio.sleep(2)
             try:

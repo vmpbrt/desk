@@ -73,7 +73,11 @@ class Analyst:
 
     async def run(self):
         while True:
-            item = await self.d.bus["analyst"].get()
+            try:
+                item = await asyncio.wait_for(self.d.bus["analyst"].get(), 30)
+            except asyncio.TimeoutError:
+                self.d.db.heartbeat("analyst", "idle")
+                continue
             while self.d.db.paused("analyst"):
                 await asyncio.sleep(2)
             try:

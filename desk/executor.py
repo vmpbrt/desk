@@ -33,7 +33,11 @@ class Executor:
     async def run(self):
         asyncio.create_task(self.expire_loop())
         while True:
-            item = await self.d.bus["executor"].get()
+            try:
+                item = await asyncio.wait_for(self.d.bus["executor"].get(), 30)
+            except asyncio.TimeoutError:
+                self.d.db.heartbeat("executor", "idle")
+                continue
             while self.d.db.paused("executor"):
                 await asyncio.sleep(2)
             try:
