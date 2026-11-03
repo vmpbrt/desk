@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+logs/
+reports/
+publish/
+screenshots/
+*.db
+*.db-wal
+*.db-shm
+owner.json
+.desk_secrets/
+*.key
+.pytest_cache/
